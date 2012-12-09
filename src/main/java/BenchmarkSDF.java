@@ -14,7 +14,7 @@ import org.openscience.cdk.interfaces.IBond;
 import org.openscience.cdk.io.MDLV3000Reader;
 import org.openscience.cdk.io.iterator.IteratingSDFReader;
 import org.openscience.cdk.isomorphism.matchers.IQueryAtomContainer;
-import org.openscience.cdk.ringsearch.BooleanRingTester;
+import org.openscience.cdk.ringsearch.BasicRingTester;
 import org.openscience.cdk.ringsearch.RingTester;
 import org.openscience.cdk.ringsearch.SimulatedBooleanRingTester;
 import org.openscience.cdk.silent.AtomContainer;
@@ -41,7 +41,7 @@ public class BenchmarkSDF {
         options.addOption(new Option("r", "reps", true, "number of repetitions to test (default = 50)"));
         options.addOption(new Option("f", "filter", true, "filter - only test molecules below this size"));
         options.addOption(new Option("x", "stress-test", false, "perform a stress test with a very large molecule"));
-        options.addOption(new Option("s", "simulate", false, "simulates the BooleanRingTester - i.e. calculate the overhead of just converting to an adjacency list"));
+        options.addOption(new Option("s", "simulate", false, "simulates the BasicRingTester - i.e. calculate the overhead of just converting to an adjacency list"));
         options.addOption(new Option("h", "help", false, "print help"));
     }
 
@@ -102,7 +102,7 @@ public class BenchmarkSDF {
         int bitwiseCount = bitwiseBM.benchmark(molecules, dummy);
         int treeCount = treeBM.benchmark(molecules, dummy);
 
-        System.out.printf("[BENCHMARK] BooleanRingTester indicated there were %d atoms in rings\n", bitwiseCount);
+        System.out.printf("[BENCHMARK] BasicRingTester indicated there were %d atoms in rings\n", bitwiseCount);
         System.out.printf("[BENCHMARK] SpanningTree      indicated there were %d atoms in rings\n", treeCount);
 
         if (!stressTest) {
@@ -124,7 +124,7 @@ public class BenchmarkSDF {
             reps = 5;  // 50 is way to many for the stress test
 
         System.out.printf("[BENCHMARK] Starting benchmark, %d repetitions\n", reps);
-        System.out.print("[BENCHMARK] Testing BooleanRingTester");
+        System.out.print("[BENCHMARK] Testing BasicRingTester");
         for (int r = 0; r < reps; r++) {
             System.out.print(".");
             bitwiseBM.benchmark(molecules, bitwiseStats);
@@ -138,16 +138,16 @@ public class BenchmarkSDF {
         }
         System.out.println("done");
 
-        System.out.printf("[BENCHMARK] BooleanRingTester took on average %.2f ms +/- %.2f\n", bitwiseStats.getMean(), bitwiseStats.getStandardDeviation());
+        System.out.printf("[BENCHMARK] BasicRingTester took on average %.2f ms +/- %.2f\n", bitwiseStats.getMean(), bitwiseStats.getStandardDeviation());
         System.out.printf("[BENCHMARK]      SpanningTree took on average %.2f ms +/- %.2f\n", treeStats.getMean(), treeStats.getStandardDeviation());
         System.out.println("[BENCHMARK]");
-        System.out.printf("[BENCHMARK] BooleanRingTester took a minimum of %.0f ms and a maximum of %.0f ms\n", bitwiseStats.getMin(), bitwiseStats.getMax());
+        System.out.printf("[BENCHMARK] BasicRingTester took a minimum of %.0f ms and a maximum of %.0f ms\n", bitwiseStats.getMin(), bitwiseStats.getMax());
         System.out.printf("[BENCHMARK]      SpanningTree took a minimum of %.0f ms and a maximum of %.0f ms\n", treeStats.getMin(), treeStats.getMax());
         System.out.println("[BENCHMARK]");
 
         if (bitwiseStats.getMean() < treeStats.getMean()) {
             double perc = treeStats.getMean() / bitwiseStats.getMean();
-            System.out.printf("[BENCHMARK] BooleanRingTester was %.2f%% faster\n", perc * 100);
+            System.out.printf("[BENCHMARK] BasicRingTester was %.2f%% faster\n", perc * 100);
         } else if (bitwiseStats.getMean() > treeStats.getMean()) {
             double perc = bitwiseStats.getMean() / treeStats.getMean();
             System.out.printf("[BENCHMARK] SpanningTree was %.2f%% faster\n", perc * 100);
@@ -220,7 +220,7 @@ public class BenchmarkSDF {
 
     static class BooleanRingTesterBenchmark extends RingTestBenchmark {
         BooleanRingTesterBenchmark() {
-            super("BooleanRingTester");
+            super("BasicRingTester");
         }
 
         @Override
@@ -229,7 +229,7 @@ public class BenchmarkSDF {
 
             long start = System.currentTimeMillis();
             for (IAtomContainer molecule : molecules) {
-                RingTester tester = new BooleanRingTester(molecule);
+                RingTester tester = new BasicRingTester(molecule);
                 for (int i = 0; i < molecule.getAtomCount(); i++) {
                     if (tester.isInRing(i))
                         count++;
@@ -245,7 +245,7 @@ public class BenchmarkSDF {
 
     static class SimulatedBooleanRingTesterBenchmark extends RingTestBenchmark {
         SimulatedBooleanRingTesterBenchmark() {
-            super("BooleanRingTester (simulated)");
+            super("BasicRingTester (simulated)");
         }
 
         @Override

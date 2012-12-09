@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * @author John May
  */
-class RegularBooleanRingTester implements RingTester {
+class RegularBasicRingTester implements RingTester {
 
     private final List<List<Integer>> graph;
     private final int n;
@@ -17,7 +17,7 @@ class RegularBooleanRingTester implements RingTester {
     // search stack
     private final long[] stack;
 
-    protected RegularBooleanRingTester(List<List<Integer>> graph) {
+    protected RegularBasicRingTester(List<List<Integer>> graph) {
 
         this.graph = graph;
         this.n = graph.size();

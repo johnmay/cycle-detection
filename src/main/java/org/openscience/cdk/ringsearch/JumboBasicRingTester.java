@@ -5,7 +5,7 @@ import org.openscience.cdk.interfaces.IAtom;
 import java.util.BitSet;
 import java.util.List;
 
-class JumboBooleanRingTester implements RingTester {
+class JumboBasicRingTester implements RingTester {
 
     private final List<List<Integer>> graph;
     private final int n;
@@ -16,9 +16,9 @@ class JumboBooleanRingTester implements RingTester {
     private final BitSet[] stack;
     private final BitSet EMPTY;
 
-    protected JumboBooleanRingTester(List<List<Integer>> graph) {
+    protected JumboBasicRingTester(List<List<Integer>> graph) {
         this.graph = graph;
-        this.n     = graph.size();
+        this.n = graph.size();
         this.explored = new BitSet(n);
         this.rings = new BitSet(n);
 
@@ -34,7 +34,7 @@ class JumboBooleanRingTester implements RingTester {
         }
 
         // haven't explored the that node (new search or disconnected molecule)
-        check(i, i, rings, stack, copy(EMPTY));
+        check(i, EMPTY, copy(EMPTY));
 
         return rings.get(i);
     }
@@ -47,21 +47,17 @@ class JumboBooleanRingTester implements RingTester {
     /**
      * @return explored vertexes
      */
-    public void check(int i, int parent, BitSet rings, BitSet[] stack, BitSet path) {
+    public void check(int i, BitSet parentPath, BitSet path) {
 
-        BitSet state = copy(path);
-        stack[i] = state;
-
+        stack[i] = copy(path);
         path.set(i);
         explored.set(i);
 
         for (int j : graph.get(i)) {
-            if (j != parent) {
-                if (path.get(j)) {
-                    rings.or(xor(stack[j], path));
-                } else if (!explored.get(j)) {
-                    check(j, i, rings, stack, copy(path));
-                }
+            if (parentPath.get(j)) {
+                rings.or(xor(stack[j], path));
+            } else if (!explored.get(j)) {
+                check(j, stack[i], copy(path));
             }
         }
     }

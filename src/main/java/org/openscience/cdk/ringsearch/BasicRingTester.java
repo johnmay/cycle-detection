@@ -1,8 +1,5 @@
 package org.openscience.cdk.ringsearch;
 
-import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
-import org.openscience.cdk.CDKConstants;
-import org.openscience.cdk.graph.SpanningTree;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IBond;
@@ -12,21 +9,21 @@ import java.util.Arrays;
 import java.util.List;
 
 
-
 /**
  * @author John May
  */
-public class BooleanRingTester implements RingTester {
+public class BasicRingTester implements RingTester {
 
-    private RingTester tester;
-    private IAtomContainer container;
+    private final RingTester tester;
+    private final IAtomContainer container;
 
-    public BooleanRingTester(IAtomContainer container) {
+    public BasicRingTester(List<List<Integer>> graph, IAtomContainer container) {
+        this.tester    = graph.size() < 64 ? new RegularBasicRingTester(graph) : new JumboBasicRingTester(graph);
         this.container = container;
-        if (container.getAtomCount() < 64)
-            tester = new RegularBooleanRingTester(createList(container));
-        else
-            tester = new JumboBooleanRingTester(createList(container));
+    }
+
+    public BasicRingTester(IAtomContainer container) {
+        this(createList(container), container);
     }
 
     @Override
@@ -42,10 +39,10 @@ public class BooleanRingTester implements RingTester {
     public static int[][] create(IAtomContainer container) {
 
         int n = container.getAtomCount();
-        int[][] graph = new int[n][12];
+        int[][] graph = new int[n][16];
         int[] connected = new int[n];
 
-        // ct table only
+        // ct table only (i.e. multi-bonds will break this)
         for (IBond bond : container.bonds()) {
             int a1 = container.getAtomNumber(bond.getAtom(0));
             int a2 = container.getAtomNumber(bond.getAtom(1));
@@ -69,6 +66,7 @@ public class BooleanRingTester implements RingTester {
 
         for (int i = 0; i < n; i++)
             graph.add(new ArrayList<Integer>(6));
+
 
         // ct table only
         for (IBond bond : container.bonds()) {

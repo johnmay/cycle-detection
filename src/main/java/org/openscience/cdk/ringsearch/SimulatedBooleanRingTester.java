@@ -20,9 +20,9 @@ public class SimulatedBooleanRingTester implements RingTester {
     public SimulatedBooleanRingTester(IAtomContainer container) {
         this.container = container;
         if (container.getAtomCount() < 64)
-            tester = new RegularBooleanRingTester(createList(container));
+            tester = new RegularBasicRingTester(createList(container));
         else
-            tester = new JumboBooleanRingTester(createList(container));
+            tester = new JumboBasicRingTester(createList(container));
     }
 
     @Override
