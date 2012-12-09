@@ -48,7 +48,7 @@ class RegularBasicRingTester implements RingTester {
         return isBitSet(cyclic, i);
     }
 
-    public boolean visited(int i){
+    public boolean visited(int i) {
         return isBitSet(visited, i);
     }
 
@@ -65,10 +65,11 @@ class RegularBasicRingTester implements RingTester {
 
         for (int j : graph.get(i)) {
             if (visited(j)) {
-                if (isBitSet(parentPath, j))
+                if (isBitSet(parentPath, j)) {
                     cyclic |= state[j] ^ path;
-                else
-                    check(j, state[i], path);
+                }
+            } else {
+                check(j, state[i], path);
             }
         }
 
