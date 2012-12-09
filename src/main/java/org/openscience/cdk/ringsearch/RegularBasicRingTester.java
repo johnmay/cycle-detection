@@ -11,20 +11,20 @@ class RegularBasicRingTester implements RingTester {
 
     private final List<List<Integer>> graph;
     private final int n;
-    private long explored;
-    private long rings;
+    private long visited;
+    private long cyclic;
 
-    // search stack
-    private final long[] stack;
+    // search state
+    private final long[] state;
 
     protected RegularBasicRingTester(List<List<Integer>> graph) {
 
         this.graph = graph;
         this.n = graph.size();
 
-        this.stack = new long[n];
-        this.explored = 0;
-        this.rings = 0;
+        this.state = new long[n];
+        this.visited = 0;
+        this.cyclic = 0;
 
     }
 
@@ -43,9 +43,13 @@ class RegularBasicRingTester implements RingTester {
 
     @Override
     public boolean isInRing(int i) {
-        if (!isBitSet(explored, i))
+        if (!isBitSet(visited, i))
             check(i, 0, 0);
-        return isBitSet(rings, i);
+        return isBitSet(cyclic, i);
+    }
+
+    public boolean visited(int i){
+        return isBitSet(visited, i);
     }
 
     /**
@@ -57,13 +61,15 @@ class RegularBasicRingTester implements RingTester {
      */
     private void check(int i, long parentPath, long path) {
 
-        explored |= path = setBit(stack[i] = path, i);
+        visited |= path = setBit(state[i] = path, i);
 
         for (int j : graph.get(i)) {
-            if (isBitSet(parentPath, j))
-                rings |= stack[j] ^ path;
-            else if (!isBitSet(explored, j))
-                check(j, stack[i], path);
+            if (visited(j)) {
+                if (isBitSet(parentPath, j))
+                    cyclic |= state[j] ^ path;
+                else
+                    check(j, state[i], path);
+            }
         }
 
     }
