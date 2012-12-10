@@ -103,7 +103,7 @@ public class BenchmarkSDF {
         int treeCount = treeBM.benchmark(molecules, dummy);
 
         System.out.printf("[BENCHMARK] BasicRingTester indicated there were %d atoms in rings\n", bitwiseCount);
-        System.out.printf("[BENCHMARK] SpanningTree      indicated there were %d atoms in rings\n", treeCount);
+        System.out.printf("[BENCHMARK] SpanningTree    indicated there were %d atoms in rings\n", treeCount);
 
         if (!stressTest) {
             System.out.print("[BENCHMARK] warming up");
@@ -131,7 +131,7 @@ public class BenchmarkSDF {
         }
         System.out.println("done");
 
-        System.out.print("[BENCHMARK] Testing      SpanningTree");
+        System.out.print("[BENCHMARK] Testing   SpanningTree");
         for (int r = 0; r < reps; r++) {
             System.out.print(".");
             treeBM.benchmark(molecules, treeStats);
@@ -139,10 +139,10 @@ public class BenchmarkSDF {
         System.out.println("done");
 
         System.out.printf("[BENCHMARK] BasicRingTester took on average %.2f ms +/- %.2f\n", bitwiseStats.getMean(), bitwiseStats.getStandardDeviation());
-        System.out.printf("[BENCHMARK]      SpanningTree took on average %.2f ms +/- %.2f\n", treeStats.getMean(), treeStats.getStandardDeviation());
+        System.out.printf("[BENCHMARK]    SpanningTree took on average %.2f ms +/- %.2f\n", treeStats.getMean(), treeStats.getStandardDeviation());
         System.out.println("[BENCHMARK]");
         System.out.printf("[BENCHMARK] BasicRingTester took a minimum of %.0f ms and a maximum of %.0f ms\n", bitwiseStats.getMin(), bitwiseStats.getMax());
-        System.out.printf("[BENCHMARK]      SpanningTree took a minimum of %.0f ms and a maximum of %.0f ms\n", treeStats.getMin(), treeStats.getMax());
+        System.out.printf("[BENCHMARK]    SpanningTree took a minimum of %.0f ms and a maximum of %.0f ms\n", treeStats.getMin(), treeStats.getMax());
         System.out.println("[BENCHMARK]");
 
         if (bitwiseStats.getMean() < treeStats.getMean()) {

@@ -9,7 +9,7 @@ class JumboBasicRingTester implements RingTester {
 
     private final List<List<Integer>> graph;
     private final int n;
-    private final BitSet explored;
+    private final BitSet visited;
     private final BitSet rings;
 
     // search stack
@@ -19,23 +19,22 @@ class JumboBasicRingTester implements RingTester {
     protected JumboBasicRingTester(List<List<Integer>> graph) {
         this.graph = graph;
         this.n = graph.size();
-        this.explored = new BitSet(n);
+        this.visited = new BitSet(n);
         this.rings = new BitSet(n);
 
         this.stack = new BitSet[n];
         this.EMPTY = new BitSet(n);
+
+        // check from all unvisited vertices
+        for (int i = 0; i < n; i++) {
+            if (!visited(i)) check(i, EMPTY, copy(EMPTY));
+        }
+
+
     }
 
     @Override
     public boolean isInRing(int i) {
-
-        if (explored.get(i)) {
-            return rings.get(i);
-        }
-
-        // haven't explored the that node (new search or disconnected molecule)
-        check(i, EMPTY, copy(EMPTY));
-
         return rings.get(i);
     }
 
@@ -44,22 +43,32 @@ class JumboBasicRingTester implements RingTester {
         throw new IllegalStateException("this ring tester does not store containers/atoms");
     }
 
+    public boolean visited(int i) {
+        return visited.get(i);
+    }
+
     /**
-     * @return explored vertexes
+     * @return visited vertexes
      */
     public void check(int i, BitSet parentPath, BitSet path) {
 
         stack[i] = copy(path);
         path.set(i);
-        explored.set(i);
+        visited.set(i);
 
         for (int j : graph.get(i)) {
-            if (parentPath.get(j)) {
-                rings.or(xor(stack[j], path));
-            } else if (!explored.get(j)) {
+            if (visited(j)) {
+                if (parentPath.get(j)) {
+                    registerCycle(xor(stack[j], path));
+                }
+            } else {
                 check(j, stack[i], copy(path));
             }
         }
+    }
+
+    public void registerCycle(BitSet cycle) {
+        rings.or(cycle);
     }
 
     private static BitSet xor(BitSet set1, BitSet set2) {

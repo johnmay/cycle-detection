@@ -2,6 +2,7 @@ package org.openscience.cdk.ringsearch;
 
 import org.openscience.cdk.interfaces.IAtom;
 
+import java.util.BitSet;
 import java.util.List;
 
 /**
@@ -26,6 +27,11 @@ class RegularBasicRingTester implements RingTester {
         this.visited = 0;
         this.cyclic = 0;
 
+        // check from all unvisited vertices
+        for (int i = 0; i < n; i++) {
+            if (!visited(i)) check(i, 0, 0);
+        }
+
     }
 
     private static boolean isBitSet(long value, int bit) {
@@ -43,9 +49,13 @@ class RegularBasicRingTester implements RingTester {
 
     @Override
     public boolean isInRing(int i) {
-        if (!isBitSet(visited, i))
+        if (!visited(i))
             check(i, 0, 0);
         return isBitSet(cyclic, i);
+    }
+
+    public void registerCycle(long cycle){
+        this.cyclic |= cycle;
     }
 
     public boolean visited(int i) {
@@ -66,7 +76,7 @@ class RegularBasicRingTester implements RingTester {
         for (int j : graph.get(i)) {
             if (visited(j)) {
                 if (isBitSet(parentPath, j)) {
-                    cyclic |= state[j] ^ path;
+                    registerCycle(state[j] ^ path);
                 }
             } else {
                 check(j, state[i], path);

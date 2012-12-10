@@ -18,7 +18,7 @@ public class BasicRingTester implements RingTester {
     private final IAtomContainer container;
 
     public BasicRingTester(List<List<Integer>> graph, IAtomContainer container) {
-        this.tester    = graph.size() < 64 ? new RegularBasicRingTester(graph) : new JumboBasicRingTester(graph);
+        this.tester    = graph.size() <= 64 ? new RegularBasicRingTester(graph) : new JumboBasicRingTester(graph);
         this.container = container;
     }
 
